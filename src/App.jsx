@@ -1,24 +1,13 @@
 import SignInPage from "./components/pages/SignInPage";
-import RoomSelectionPage from "./components/pages/RoomSelectionPage";
-import MessagesPage from "./components/pages/MessagesPage";
+import NavBar from "./components/NavBar";
+import Sidebar from "./components/Sidebar";
+import Chat from "./components/Chat";
 
-import { useState } from "react";
-import { auth } from "./utils/firebase-config";
-import { signOut } from "firebase/auth";
-import Cookies from "universal-cookie";
-
-const cookies = new Cookies();
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useIsSignedIn } from "./components/stores/useIsSignedIn";
 
 export default function App() {
-  const [isSignedIn, setIsSignedIn] = useState(cookies.get("auth-token"));
-  const [room, setRoom] = useState(null);
-
-  async function signOutUser() {
-    await signOut(auth);
-    cookies.remove("auth-token");
-    setIsSignedIn(false);
-    setRoom(null);
-  }
+  const { isSignedIn, setIsSignedIn } = useIsSignedIn();
 
   if (!isSignedIn) {
     return (
@@ -29,14 +18,10 @@ export default function App() {
   }
 
   return (
-    <div>
-      {room ? <MessagesPage room={room} /> : <RoomSelectionPage setRoom={setRoom} />}
-
-      <div>
-        <button onClick={signOutUser} className="rounded-md bg-slate-200 px-4 py-2 transition hover:bg-slate-300">
-          Sign Out
-        </button>
-      </div>
+    <div className="grid min-h-screen grid-cols-[2fr,5fr] grid-rows-[72px,auto] bg-white">
+      <NavBar />
+      <Sidebar />
+      {/* <Chat /> */}
     </div>
   );
 }

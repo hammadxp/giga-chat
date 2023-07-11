@@ -1,20 +1,7 @@
-import { signInWithPopup } from "firebase/auth";
-import { auth, provider } from "/src/utils/firebase-config.js";
+import useAuth from "../hooks/useAuth";
 
-import Cookies from "universal-cookie";
-const cookies = new Cookies();
-
-export default function SignInPage({ setIsSignedIn }) {
-  async function signInWithGoogle() {
-    try {
-      const authData = await signInWithPopup(auth, provider);
-      cookies.set("auth-token", authData.user.refreshToken);
-
-      setIsSignedIn(true);
-    } catch (error) {
-      console.log(error);
-    }
-  }
+export default function SignInPage() {
+  const { signInWithGoogle } = useAuth();
 
   return (
     <div>
