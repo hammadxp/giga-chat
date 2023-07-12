@@ -1,19 +1,24 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useStore } from "./stores/useStore";
-import { addDoc, collection, onSnapshot, query, serverTimestamp, where } from "firebase/firestore";
+import { addDoc, collection, onSnapshot, orderBy, query, serverTimestamp, where } from "firebase/firestore";
 import { db } from "../utils/firebase-config";
 
 export default function Chat() {
   const { currentRoom, currentUser } = useStore();
-  const [messages, setMessages] = useState([]); // Local
+  const [messages, setMessages] = useState([]);
 
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState();
   const [newMessage, setNewMessage] = useState("");
+
+  const dummy = useRef(null);
 
   // Fetch messages
 
   useEffect(() => {
-    const messagesQuery = query(collection(db, "messages"), where("room", "==", currentRoom));
+    setIsLoading(true);
+    console.log("isLoading after setting to true", isLoading);
+
+    const messagesQuery = query(collection(db, "messages"), where("room", "==", currentRoom), orderBy("createdAt"));
 
     const unsubscribe = onSnapshot(messagesQuery, (snapshot) => {
       let snapshotMessages = [];
@@ -24,10 +29,19 @@ export default function Chat() {
 
       setMessages(snapshotMessages);
       setIsLoading(false);
+      console.log("isLoading after setting to false", isLoading);
+
+      if (currentRoom && snapshotMessages.length === 0) {
+        setMessages(null);
+      }
+
+      dummy.current?.scrollIntoView({
+        behavior: "smooth",
+      });
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [currentRoom]);
 
   // Send message
 
@@ -53,33 +67,32 @@ export default function Chat() {
     <div className={`m-2 ml-0 grid grid-rows-[1fr,auto] rounded-xl bg-purple-100 ${!currentRoom && "place-items-center"}`}>
       {currentRoom ? (
         <>
-          <div className="h-[30rem] min-h-max overflow-y-scroll p-4">
-            {isLoading ? (
-              <div className="grid h-full w-full place-items-center">
-                <div className="h-5 w-5 animate-spin bg-red-400">
-                  <svg className="mr-3 h-5 w-5 animate-spin text-slate-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
+          <div className="h-[30rem] overflow-y-scroll p-4">
+            {messages ? (
+              isLoading ? (
+                <div className="grid h-full w-full place-items-center">
+                  <p>Loading...</p>
                 </div>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {messages.map((message) => (
-                  <div key={message.id} className="flex items-center gap-4 rounded-sm font-medium text-purple-950">
-                    <img src={message.userPhotoURL} alt="" className="h-10 w-10 rounded-full" />
-                    <div className="-space-y-1">
-                      <span className="text-xs">{message.userDisplayName}</span>
-                      <p className="text-lg">{message.text}</p>
+              ) : (
+                <div className="space-y-3">
+                  {messages.map((message) => (
+                    <div key={message.id} className="flex items-center gap-4 rounded-sm font-medium text-purple-950">
+                      <img src={message.userPhotoURL} alt="" className="h-10 w-10 rounded-full" />
+                      <div className="-space-y-1">
+                        <span className="text-xs">{message.userDisplayName}</span>
+                        <p className="text-lg">{message.text}</p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+              )
+            ) : (
+              <div className="grid h-full w-full place-items-center">
+                <p>No messages in this room</p>
               </div>
             )}
+
+            <div ref={dummy}></div>
           </div>
           <div className="">
             <form onSubmit={handleNewMessage} className="mx-auto flex max-w-2xl gap-2 py-1">

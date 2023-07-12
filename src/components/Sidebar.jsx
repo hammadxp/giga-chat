@@ -26,8 +26,6 @@ export default function Sidebar() {
 
         setRooms(snapshotRooms);
         setIsLoading(false);
-
-        console.log(snapshotRooms);
       });
 
       // Mine
@@ -65,8 +63,8 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="relative m-2 grid place-items-center overflow-hidden rounded-xl bg-purple-100">
-      <div className="flex h-full w-full flex-col">
+    <aside className="relative m-2 overflow-hidden rounded-xl bg-purple-100">
+      <div className={`flex h-full w-full flex-col overflow-y-scroll ${isLoading && "items-center justify-center"}`}>
         {isLoading ? (
           <p>Loading...</p>
         ) : (
@@ -74,7 +72,7 @@ export default function Sidebar() {
             <div
               key={room.id}
               onClick={() => setCurrentRoom(room.id)}
-              className="flex h-20 w-full cursor-pointer items-center gap-4 border-b-2 border-purple-200 px-6 py-4 text-black transition hover:bg-purple-200"
+              className="flex h-20 w-full cursor-pointer items-center gap-4 border-b-2 border-purple-200 bg-purple-100 px-6 py-4 text-black transition hover:bg-purple-200"
             >
               <div className="h-14 w-14 rounded-full bg-white"></div>
               <h3>{room.name}</h3>
@@ -83,7 +81,7 @@ export default function Sidebar() {
         )}
       </div>
 
-      <div className="absolute bottom-4 space-x-2">
+      <div className="absolute bottom-4 left-1/2 flex min-w-max -translate-x-1/2 space-x-2">
         <button onClick={joinRoom} className="rounded-xl bg-purple-500 px-5 py-3 text-white shadow-md transition hover:bg-purple-400">
           Join a room
         </button>
