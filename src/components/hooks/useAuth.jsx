@@ -1,15 +1,19 @@
 import { auth, provider } from "/src/utils/firebase-config";
 import { signInWithPopup, signOut } from "firebase/auth";
 import { useStore } from "../stores/useStore";
-import { useIsSignedIn } from "../stores/useIsSignedIn";
-import { useCurrentRoom } from "../stores/useCurrentRoom";
 import { setDoc, doc, getDoc } from "firebase/firestore";
 import { db } from "../../utils/firebase-config";
+import { useEffect } from "react";
+import { onAuthStateChanged } from "firebase/auth";
 
 export default function useAuth() {
-  const { cookies, usersRef } = useStore();
-  const { setIsSignedIn } = useIsSignedIn();
-  const { setCurrentRoom } = useCurrentRoom();
+  const { cookies, setIsSignedIn, setCurrentRoom, setCurrentUser } = useStore();
+
+  useEffect(() => {
+    const unregisterAuthObserver = onAuthStateChanged(auth, (user) => setCurrentUser(user));
+
+    return () => unregisterAuthObserver();
+  }, []);
 
   async function signInWithGoogle() {
     try {

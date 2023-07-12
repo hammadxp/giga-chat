@@ -4,10 +4,10 @@ import Sidebar from "./components/Sidebar";
 import Chat from "./components/Chat";
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { useIsSignedIn } from "./components/stores/useIsSignedIn";
+import { useStore } from "./components/stores/useStore";
 
 export default function App() {
-  const { isSignedIn, setIsSignedIn } = useIsSignedIn();
+  const { isSignedIn, setIsSignedIn } = useStore();
 
   if (!isSignedIn) {
     return (
@@ -21,7 +21,7 @@ export default function App() {
     <div className="grid min-h-screen grid-cols-[2fr,5fr] grid-rows-[72px,auto] bg-white">
       <NavBar />
       <Sidebar />
-      {/* <Chat /> */}
+      <Chat />
     </div>
   );
 }
