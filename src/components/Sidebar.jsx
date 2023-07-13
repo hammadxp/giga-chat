@@ -4,7 +4,7 @@ import { useStore } from "./stores/useStore";
 import { useEffect, useState } from "react";
 
 export default function Sidebar() {
-  const { currentUser, rooms, setRooms, setCurrentRoom } = useStore();
+  const { currentUser, rooms, setRooms, setCurrentRoom, currentRoom } = useStore();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -65,11 +65,13 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="grid h-full grid-rows-[1fr,auto] overflow-auto rounded-xl bg-[#f2efff]">
+    <aside
+      className={`grid grid-rows-[1fr,auto] overflow-auto rounded-xl bg-[#f2efff] 600px:rounded-none ${currentRoom ? "600px:hidden" : "600px:grid"}`}
+    >
       <div className="overflow-y-scroll bg-[#f2efff] p-2">
         {isLoading ? (
           <div className="grid h-full w-full place-items-center">
-            <p>Loading...</p>
+            <p>Loading rooms...</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -87,7 +89,7 @@ export default function Sidebar() {
         )}
       </div>
 
-      <div className="flex justify-center gap-2 rounded-xl p-1">
+      <div className="flex justify-center gap-2 rounded-xl p-1 600px:py-2">
         <button onClick={joinRoom} className="rounded-xl bg-[#724ff9] px-5 py-3 text-white shadow-md transition hover:bg-[#724ff9]/80">
           Join a room
         </button>
