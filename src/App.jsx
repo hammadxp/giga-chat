@@ -18,7 +18,7 @@ export default function App() {
   }
 
   return (
-    <div className="grid h-screen grid-cols-[2fr,5fr] grid-rows-[72px,auto] bg-white">
+    <div className="grid h-screen grid-cols-[2fr,5fr] grid-rows-[auto,1fr] gap-2 overflow-y-scroll bg-white p-2">
       <NavBar />
       <Sidebar />
       <Chat />

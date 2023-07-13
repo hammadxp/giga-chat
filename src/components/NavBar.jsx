@@ -1,15 +1,10 @@
-import useAuth from "./hooks/useAuth";
+import PopupMenuAccount from "./PopupMenuAccount";
 
 export default function NavBar() {
-  const { signOutUser } = useAuth();
-
   return (
-    <div className="col-span-2 flex items-center justify-between px-8">
-      <h2 className="text-xl font-bold">Giga Chat</h2>
-
-      <button onClick={() => signOutUser()} className="rounded-xl bg-purple-500 px-5 py-2 text-white shadow-md transition hover:bg-purple-400">
-        Sign Out
-      </button>
+    <div className="col-span-2 flex items-center justify-between rounded-xl px-8 py-2">
+      <img src="/images/logo.svg" alt="Grogo logo" className="h-8" />
+      <PopupMenuAccount />
     </div>
   );
 }

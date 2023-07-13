@@ -4,11 +4,13 @@ export default function SignInPage() {
   const { signInWithGoogle } = useAuth();
 
   return (
-    <div>
-      <p>Sign In To Continue</p>
-      <button onClick={signInWithGoogle} className="rounded-md bg-slate-200 px-4 py-2 transition hover:bg-slate-300">
-        Sign In With Google
-      </button>
+    <div className="grid h-screen w-full place-items-center">
+      <div className="flex flex-col items-center">
+        <img src="images/illustrations/undraw_welcome_cats_thqn.svg" alt="Sign in placeholder photo" className="h-52 w-72" />
+        <button onClick={signInWithGoogle} className="rounded-lg bg-[#724ff9] px-6 py-3 text-xl text-white transition hover:bg-[#724ff9]/80">
+          Sign In With Google
+        </button>
+      </div>
     </div>
   );
 }

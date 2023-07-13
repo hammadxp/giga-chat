@@ -14,6 +14,8 @@ export default function Sidebar() {
       const docSnap = await getDoc(doc(db, "users", currentUser.uid));
       const joinedRooms = docSnap?.data().joinedRooms;
 
+      if (joinedRooms.length === 0) return;
+
       const roomsQuery = query(collection(db, "rooms"), where(documentId(), "in", joinedRooms));
 
       // Pedro
@@ -63,29 +65,33 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="relative m-2 overflow-hidden rounded-xl bg-purple-100">
-      <div className={`flex h-full w-full flex-col overflow-y-scroll ${isLoading && "items-center justify-center"}`}>
+    <aside className="grid h-full grid-rows-[1fr,auto] overflow-auto rounded-xl bg-[#f2efff]">
+      <div className="overflow-y-scroll bg-[#f2efff] p-2">
         {isLoading ? (
-          <p>Loading...</p>
+          <div className="grid h-full w-full place-items-center">
+            <p>Loading...</p>
+          </div>
         ) : (
-          rooms.map((room) => (
-            <div
-              key={room.id}
-              onClick={() => setCurrentRoom(room.id)}
-              className="flex h-20 w-full cursor-pointer items-center gap-4 border-b-2 border-purple-200 bg-purple-100 px-6 py-4 text-black transition hover:bg-purple-200"
-            >
-              <div className="h-14 w-14 rounded-full bg-white"></div>
-              <h3>{room.name}</h3>
-            </div>
-          ))
+          <div className="space-y-3">
+            {rooms.map((room) => (
+              <div
+                key={room.id}
+                onClick={() => setCurrentRoom(room)}
+                className="flex h-20 w-full cursor-pointer items-center gap-4 rounded-lg bg-[#f9f7fc] px-6 py-4 text-black transition hover:bg-[#724ff9] hover:text-white"
+              >
+                <div className="h-14 w-14 rounded-full bg-white"></div>
+                <h3>{room.name}</h3>
+              </div>
+            ))}
+          </div>
         )}
       </div>
 
-      <div className="absolute bottom-4 left-1/2 flex min-w-max -translate-x-1/2 space-x-2">
-        <button onClick={joinRoom} className="rounded-xl bg-purple-500 px-5 py-3 text-white shadow-md transition hover:bg-purple-400">
+      <div className="flex justify-center gap-2 rounded-xl p-1">
+        <button onClick={joinRoom} className="rounded-xl bg-[#724ff9] px-5 py-3 text-white shadow-md transition hover:bg-[#724ff9]/80">
           Join a room
         </button>
-        <button onClick={createRoom} className="rounded-xl bg-purple-500 px-5 py-3 text-white shadow-md transition hover:bg-purple-400">
+        <button onClick={createRoom} className="rounded-xl bg-[#724ff9] px-5 py-3 text-white shadow-md transition hover:bg-[#724ff9]/80">
           Create a room
         </button>
       </div>
