@@ -1,14 +1,29 @@
 import { Menu } from "@headlessui/react";
-import { deleteDoc, doc } from "firebase/firestore";
+import { arrayRemove, doc, updateDoc } from "firebase/firestore";
 import { db } from "../utils/firebase-config";
+import { useStore } from "./stores/useStore";
 
 export default function PopupMenuRoom({ roomItem }) {
+  const { currentUser } = useStore();
+  console.log(currentUser, roomItem);
+
   function roomDetails() {
     alert(`Name: ${roomItem.name}\nCreated at: ${roomItem.createdAt}`);
   }
 
-  async function deleteRoom() {
-    await deleteDoc(doc(db, "rooms", roomItem.name));
+  async function leaveRoom() {
+    try {
+      await updateDoc(doc(db, "users", currentUser.uid), {
+        joinedRooms: arrayRemove(roomItem.name),
+      });
+
+      window.location.reload();
+      // alert(`Successfully left room '${roomItem.name}', please refresh to see changes.`);
+    } catch (error) {
+      console.error("Error when removing user from room:", error);
+    }
+
+    // const joinedRooms = await getDoc(doc(db, "users", currentUser.uid)).data().joinedRooms; // Gets current user details
   }
 
   return (
@@ -46,8 +61,8 @@ export default function PopupMenuRoom({ roomItem }) {
 
           <Menu.Item className="rounded-lg px-5 py-3 transition duration-100 hover:bg-red-500 hover:text-white">
             {({ active }) => (
-              <button onClick={deleteRoom} className={`${active && "bg-[#724ff9] text-white"}`}>
-                Delete
+              <button onClick={leaveRoom} className={`${active && "bg-[#724ff9] text-white"}`}>
+                Leave room
               </button>
             )}
           </Menu.Item>

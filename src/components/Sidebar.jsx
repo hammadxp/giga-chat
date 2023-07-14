@@ -44,20 +44,24 @@ export default function Sidebar() {
       name: roomName,
       gradient: generateRandomGradient(),
       createdAt: serverTimestamp(),
-      createdBy: auth.currentUser.uid,
+      createdBy: currentUser.uid,
     });
 
-    await updateDoc(doc(db, "users", auth.currentUser.uid), {
+    await updateDoc(doc(db, "users", currentUser.uid), {
       joinedRooms: arrayUnion(roomName),
     });
+
+    window.location.reload();
   }
 
   async function joinRoom() {
     const roomName = window.prompt("Enter name of the room you want to join:");
 
-    await updateDoc(doc(db, "users", auth.currentUser.uid), {
+    await updateDoc(doc(db, "users", currentUser.uid), {
       joinedRooms: arrayUnion(roomName),
     });
+
+    window.location.reload();
   }
 
   return (
