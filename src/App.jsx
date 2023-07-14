@@ -3,7 +3,6 @@ import NavBar from "./components/NavBar";
 import Sidebar from "./components/Sidebar";
 import Chat from "./components/Chat";
 
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useStore } from "./components/stores/useStore";
 
 export default function App() {

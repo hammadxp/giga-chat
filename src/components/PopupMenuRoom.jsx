@@ -18,7 +18,6 @@ export default function PopupMenuRoom({ roomItem }) {
       });
 
       window.location.reload();
-      // alert(`Successfully left room '${roomItem.name}', please refresh to see changes.`);
     } catch (error) {
       console.error("Error when removing user from room:", error);
     }
