@@ -1,6 +1,16 @@
 import { Menu } from "@headlessui/react";
+import { deleteDoc, doc } from "firebase/firestore";
+import { db } from "../utils/firebase-config";
 
 export default function PopupMenuRoom({ roomItem }) {
+  function roomDetails() {
+    alert(`Name: ${roomItem.name}\nCreated at: ${roomItem.createdAt}`);
+  }
+
+  async function deleteRoom() {
+    await deleteDoc(doc(db, "rooms", roomItem.name));
+  }
+
   return (
     <Menu>
       <div className="relative flex items-center">
@@ -23,7 +33,11 @@ export default function PopupMenuRoom({ roomItem }) {
 
         <Menu.Items className="absolute right-0 top-0 z-10 flex min-w-[12rem] flex-col gap-1 divide-y-2 rounded-lg bg-slate-100 p-1 shadow-lg">
           <Menu.Item className="rounded-lg px-5 py-3 transition duration-100 hover:bg-[#724ff9] hover:text-white">
-            {({ active }) => <button className={`${active && "bg-[#724ff9] text-white"}`}>Details</button>}
+            {({ active }) => (
+              <button onClick={roomDetails} className={`${active && "bg-[#724ff9] text-white"}`}>
+                Details
+              </button>
+            )}
           </Menu.Item>
 
           <Menu.Item className="rounded-lg px-5 py-3 transition duration-100 hover:bg-[#724ff9] hover:text-white">
@@ -31,7 +45,11 @@ export default function PopupMenuRoom({ roomItem }) {
           </Menu.Item>
 
           <Menu.Item className="rounded-lg px-5 py-3 transition duration-100 hover:bg-red-500 hover:text-white">
-            {({ active }) => <button className={`${active && "bg-[#724ff9] text-white"}`}>Delete</button>}
+            {({ active }) => (
+              <button onClick={deleteRoom} className={`${active && "bg-[#724ff9] text-white"}`}>
+                Delete
+              </button>
+            )}
           </Menu.Item>
         </Menu.Items>
       </div>

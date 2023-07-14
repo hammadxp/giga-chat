@@ -1,6 +1,24 @@
 import { Menu } from "@headlessui/react";
+import { deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { db } from "../utils/firebase-config";
 
 export default function PopupMenuChat({ messageItem }) {
+  async function editMessage() {
+    const textNew = window.prompt("Enter changed text for this message:");
+
+    await updateDoc(doc(db, "messages", messageItem.id), {
+      text: textNew,
+    });
+  }
+
+  function copyMessageToClipboard() {
+    navigator.clipboard.writeText(messageItem.text);
+  }
+
+  async function deleteMessage() {
+    await deleteDoc(doc(db, "messages", messageItem.id));
+  }
+
   return (
     <Menu>
       <div className="relative">
@@ -23,15 +41,27 @@ export default function PopupMenuChat({ messageItem }) {
 
         <Menu.Items className="absolute right-0 top-0 z-10 flex min-w-[12rem] flex-col gap-1 divide-y-2 rounded-lg bg-slate-100 p-1 shadow-lg">
           <Menu.Item className="rounded-lg px-5 py-3 transition duration-100 hover:bg-[#724ff9] hover:text-white">
-            {({ active }) => <button className={`${active && "bg-[#724ff9] text-white"}`}>Edit</button>}
+            {({ active }) => (
+              <button onClick={editMessage} className={`${active && "bg-[#724ff9] text-white"}`}>
+                Edit
+              </button>
+            )}
           </Menu.Item>
 
           <Menu.Item className="rounded-lg px-5 py-3 transition duration-100 hover:bg-[#724ff9] hover:text-white">
-            {({ active }) => <button className={`${active && "bg-[#724ff9] text-white"}`}>Copy</button>}
+            {({ active }) => (
+              <button onClick={copyMessageToClipboard} className={`${active && "bg-[#724ff9] text-white"}`}>
+                Copy text
+              </button>
+            )}
           </Menu.Item>
 
           <Menu.Item className="rounded-lg px-5 py-3 transition duration-100 hover:bg-red-500 hover:text-white">
-            {({ active }) => <button className={`${active && "bg-[#724ff9] text-white"}`}>Delete</button>}
+            {({ active }) => (
+              <button onClick={deleteMessage} className={`${active && "bg-[#724ff9] text-white"}`}>
+                Delete
+              </button>
+            )}
           </Menu.Item>
         </Menu.Items>
       </div>

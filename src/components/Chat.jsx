@@ -30,16 +30,8 @@ export default function Chat() {
         snapshotMessages.push({ ...doc.data(), id: doc.id });
       });
 
-      setMessages(snapshotMessages);
+      snapshotMessages.length === 0 ? setMessages(null) : setMessages(snapshotMessages);
       setIsLoading(false);
-
-      if (currentRoom && snapshotMessages.length === 0) {
-        setMessages(null);
-      }
-
-      dummy.current?.scrollIntoView({
-        behavior: "smooth",
-      });
     });
 
     return () => unsubscribe();
@@ -61,11 +53,13 @@ export default function Chat() {
       userDisplayName: currentUser.displayName,
       userId: currentUser.uid,
     });
-
-    dummy.current?.scrollIntoView({
-      behavior: "smooth",
-    });
   }
+
+  // Scroll to newest message
+
+  useEffect(() => {
+    dummy.current && dummy.current.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   // Markup
 
@@ -105,15 +99,20 @@ export default function Chat() {
                       {currentUser.uid === message.userId ? (
                         <div key={message.id} className="group ml-auto flex w-full items-center justify-end gap-4">
                           <div className="invisible group-hover:visible">
+                            {console.log(message)}
                             <PopupMenuChat messageItem={message} />
                           </div>
-                          <p className="w-fit rounded-full rounded-br-xl bg-[#724ff9] px-4 py-2 text-lg font-medium text-white">{message.text}</p>
+                          <p className="w-fit rounded-full rounded-br-xl bg-[#724ff9] px-4 py-2 text-lg font-medium text-white shadow-md">
+                            {message.text}
+                          </p>
                           <img src={message.userPhotoURL} alt="Account photo" className="h-10 w-10 rounded-full" />
                         </div>
                       ) : (
                         <div key={message.id} className="group ml-auto flex w-full items-center justify-start gap-4">
                           <img src={message.userPhotoURL} alt="Account photo" className="h-10 w-10 rounded-full" />
-                          <p className="w-fit rounded-full rounded-bl-xl bg-[#724ff9] px-4 py-2 text-lg font-medium text-white">{message.text}</p>
+                          <p className="w-fit rounded-full rounded-bl-xl bg-[#ffffff] px-4 py-2 text-lg font-medium text-gray-700 shadow-md">
+                            {message.text}
+                          </p>
                           <div className="invisible group-hover:visible">
                             <PopupMenuChat messageItem={message} />
                           </div>
@@ -121,6 +120,8 @@ export default function Chat() {
                       )}
                     </>
                   ))}
+
+                  <div ref={dummy}></div>
                 </div>
               )
             ) : (
@@ -131,8 +132,6 @@ export default function Chat() {
                 </div>
               </div>
             )}
-
-            <div ref={dummy}></div>
           </div>
 
           {/* New message input area */}

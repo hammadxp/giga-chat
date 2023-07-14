@@ -2,13 +2,14 @@ import { serverTimestamp, setDoc, doc, updateDoc, arrayUnion, query, collection,
 import { auth, db } from "../utils/firebase-config";
 import { useStore } from "./stores/useStore";
 import { useEffect, useState } from "react";
+import generateRandomGradient from "../utils/generateRandomGradient";
 
 export default function Sidebar() {
   const { currentUser, rooms, setRooms, setCurrentRoom, currentRoom } = useStore();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    let isMounted = true;
+    let unsubscribe = () => {};
 
     async function getJoinedRooms() {
       const docSnap = await getDoc(doc(db, "users", currentUser.uid));
@@ -19,27 +20,21 @@ export default function Sidebar() {
       const roomsQuery = query(collection(db, "rooms"), where(documentId(), "in", joinedRooms));
 
       // Pedro
-      onSnapshot(roomsQuery, (snapshot) => {
-        let snapshotRooms = [];
+      unsubscribe = onSnapshot(roomsQuery, (snapshot) => {
+        let roomsSnapshot = [];
 
         snapshot.forEach((doc) => {
-          snapshotRooms.push({ ...doc.data(), id: doc.id });
+          roomsSnapshot.push({ ...doc.data(), id: doc.id });
         });
 
-        setRooms(snapshotRooms);
+        setRooms(roomsSnapshot);
         setIsLoading(false);
       });
-
-      // Mine
-      // const roomsQuerySnap = await getDocs(roomsQuery);
-      // roomsQuerySnap.forEach((doc) => {
-      //   setRooms(doc.data());
-      // });
-      // setIsLoading(false);
     }
+
     currentUser && isLoading && getJoinedRooms();
 
-    return () => (isMounted = false);
+    return () => unsubscribe();
   }, [currentUser]);
 
   async function createRoom() {
@@ -47,6 +42,7 @@ export default function Sidebar() {
 
     await setDoc(doc(db, "rooms", roomName), {
       name: roomName,
+      gradient: generateRandomGradient(),
       createdAt: serverTimestamp(),
       createdBy: auth.currentUser.uid,
     });
@@ -81,7 +77,12 @@ export default function Sidebar() {
                 onClick={() => setCurrentRoom(room)}
                 className="flex h-20 w-full cursor-pointer items-center gap-4 rounded-lg bg-[#f9f7fc] px-6 py-4 text-black transition hover:bg-[#724ff9] hover:text-white"
               >
-                <div className="h-14 w-14 rounded-full bg-white"></div>
+                <div
+                  className="h-14 w-14 rounded-full"
+                  style={{ background: `linear-gradient(to bottom right, ${room.gradient[0]}, ${room.gradient[1]})` }}
+                >
+                  {console.log(room)}
+                </div>
                 <h3>{room.name}</h3>
               </div>
             ))}
